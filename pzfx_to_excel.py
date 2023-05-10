@@ -75,14 +75,21 @@ def tables_to_excel(tables, output_file):
 
     with pd.ExcelWriter(output_file) as writer:
     
+        # Loop over tables and write them to new excel sheet
         for table_title in tables:
             table = tables[table_title]
             table_df = pd.DataFrame()
+
+            # Loop over columns and add them to table df
             for column_title in table:
                 column_df = pd.DataFrame({column_title: table[column_title]})
                 table_df = pd.concat([table_df,column_df], axis=1, sort=False)
-            
+                
+            # Flip table and add average and SEM
             table_df_transposed = table_df.transpose()
+            table_df_transposed['Average'] = table_df_transposed.mean(axis=1)
+            table_df_transposed['SEM'] = table_df_transposed.sem(axis=1)
+
             table_df_transposed.to_excel(writer, sheet_name=clean_sheet_name(table_title), index=True)
 
 
